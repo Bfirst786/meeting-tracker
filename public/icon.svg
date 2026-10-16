@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Meeting Tracker icon">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#58a6ff"/>
+      <stop offset="100%" stop-color="#0b76ef"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#f7f8fb"/>
+  <rect x="64" y="96" width="384" height="320" rx="38" fill="url(#g)"/>
+  <rect x="124" y="148" width="264" height="18" rx="9" fill="rgba(255,255,255,0.85)"/>
+  <rect x="124" y="198" width="188" height="18" rx="9" fill="rgba(255,255,255,0.75)"/>
+  <rect x="124" y="250" width="164" height="18" rx="9" fill="rgba(255,255,255,0.7)"/>
+  <circle cx="390" cy="200" r="42" fill="#ffffff" opacity="0.92"/>
+  <path d="M374 200l12 12 24-26" fill="none" stroke="#0b76ef" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="102" y="330" width="308" height="28" rx="14" fill="rgba(255,255,255,0.8)"/>
+</svg>
