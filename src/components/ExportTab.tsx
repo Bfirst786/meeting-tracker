@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { saveAs } from 'file-saver'
 import jsPDF from 'jspdf'
@@ -34,8 +34,9 @@ export default function ExportTab() {
   const [entries, setEntries] = useState<Entry[]>([])
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [format, setFormat] = useState<ExportFormat>('text')
+  const [exportFormat, setExportFormat] = useState<ExportFormat>('text')
   const [preview, setPreview] = useState('')
+  const chartRef = useRef<ChartJS<'bar'>>(null)
 
   useEffect(() => {
     const init = async () => {
@@ -134,28 +135,33 @@ export default function ExportTab() {
   }
 
   const handleExport = () => {
-    if (format === 'text') {
+    if (exportFormat === 'text') {
       downloadText(preview || 'No entries in range.', `meeting-tracker-${Date.now()}.txt`)
       return
     }
 
-    if (format === 'table') {
+    if (exportFormat === 'table') {
       downloadCsv()
       return
     }
 
-    if (format === 'xls') {
+    if (exportFormat === 'xls') {
       downloadXlsx()
       return
     }
 
-    if (format === 'pdf') {
+    if (exportFormat === 'pdf') {
       downloadPdf()
       return
     }
 
-    if (format === 'graph') {
-      setPreview(buildTextOutput(filtered))
+    if (exportFormat === 'graph') {
+      const chart = chartRef.current
+      if (!chart) return
+      const link = document.createElement('a')
+      link.href = chart.toBase64Image('image/png', 1)
+      link.download = `meeting-tracker-${Date.now()}.png`
+      link.click()
     }
   }
 
@@ -180,7 +186,7 @@ export default function ExportTab() {
 
         <label>
           Export format
-          <select value={format} onChange={(event) => setFormat(event.target.value as ExportFormat)}>
+          <select value={exportFormat} onChange={(event) => setExportFormat(event.target.value as ExportFormat)}>
             <option value="text">Text only</option>
             <option value="table">Table (CSV)</option>
             <option value="xls">Excel (.xls/.xlsx)</option>
@@ -202,11 +208,12 @@ export default function ExportTab() {
         <pre className="preview-box">{preview || 'No entries in range.'}</pre>
       </div>
 
-      {format === 'graph' && (
+      {exportFormat === 'graph' && (
         <div className="chart-section">
           <h2>Attendance graph</h2>
           <div className="chart-wrap">
             <Bar
+              ref={chartRef}
               data={chartData}
               options={{
                 responsive: true,

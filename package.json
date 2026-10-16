@@ -12,7 +12,7 @@
     "chart.js": "^4.4.3",
     "date-fns": "^3.6.0",
     "file-saver": "^2.0.5",
-    "jspdf": "^2.5.3",
+    "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.1.0",
     "localforage": "^1.10.0",
     "react": "^18.3.1",
@@ -22,10 +22,11 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^22.10.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
-    "@types/node": "^22.10.1",
     "typescript": "^5.5.4",
     "vite": "^5.4.2",
     "vite-plugin-pwa": "^0.20.5"
