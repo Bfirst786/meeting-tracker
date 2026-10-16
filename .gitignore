@@ -147,3 +147,7 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# Emitted by tsc -b from vite.config.ts
+/vite.config.js
+/vite.config.d.ts
