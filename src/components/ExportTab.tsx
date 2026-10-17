@@ -18,6 +18,7 @@ const prepareRows = (entries: Entry[]) =>
     Date: format(new Date(entry.dateTime), 'yyyy-MM-dd'),
     Time: format(new Date(entry.dateTime), 'HH:mm'),
     Type: entry.type,
+    Location: entry.location ?? '',
     Note: entry.note ?? '',
     Duration: entry.durationMinutes ?? ''
   }))
@@ -26,7 +27,7 @@ const buildTextOutput = (entries: Entry[]) => {
   if (entries.length === 0) return 'No entries in range.'
 
   return prepareRows(entries)
-    .map((row) => `${row.Date} ${row.Time} — ${row.Type}${row.Note ? ` — ${row.Note}` : ''}${row.Duration ? ` (${row.Duration} min)` : ''}`)
+    .map((row) => `${row.Date} ${row.Time} — ${row.Type}${row.Location ? ` @ ${row.Location}` : ''}${row.Note ? ` — ${row.Note}` : ''}${row.Duration ? ` (${row.Duration} min)` : ''}`)
     .join('\n')
 }
 
@@ -96,8 +97,8 @@ export default function ExportTab() {
   const downloadCsv = () => {
     const rows = prepareRows(filtered)
     const csv = [
-      ['Date', 'Time', 'Type', 'Note', 'Duration'],
-      ...rows.map((row) => [row.Date, row.Time, row.Type, row.Note, String(row.Duration)])
+      ['Date', 'Time', 'Type', 'Location', 'Note', 'Duration'],
+      ...rows.map((row) => [row.Date, row.Time, row.Type, row.Location, row.Note, String(row.Duration)])
     ]
       .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
       .join('\n')
@@ -122,10 +123,10 @@ export default function ExportTab() {
   const downloadPdf = () => {
     const doc = new jsPDF()
     const rows = prepareRows(filtered)
-    const body = rows.map((row) => [row.Date, row.Time, row.Type, row.Note || '', String(row.Duration)])
+    const body = rows.map((row) => [row.Date, row.Time, row.Type, row.Location, row.Note, String(row.Duration)])
 
     autoTable(doc, {
-      head: [['Date', 'Time', 'Type', 'Note', 'Duration']],
+      head: [['Date', 'Time', 'Type', 'Location', 'Note', 'Duration']],
       body,
       styles: { fontSize: 9 },
       headStyles: { fillColor: [11, 118, 239] }
