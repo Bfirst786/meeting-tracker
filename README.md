@@ -21,7 +21,8 @@ Meeting Attendance Tracker — PWA, local IndexedDB, export & graph
 - Buttons for Online, In-Person, Call, Manual
 - Manual note entry support
 - Date & time selector
-- Optional duration entry
+- Optional duration and location entry
+- Search entries by location or note, type, date, day of week, and time range
 - Edit and delete entries
 - Local storage using IndexedDB via localforage
 - Export to text, CSV, Excel, PDF, and graph view
