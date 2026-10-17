@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { v4 as uuidv4 } from 'uuid'
 import { Entry, EntryType } from '../types'
 import { loadEntries, saveEntries } from '../utils/storage'
-import type { LogDraft } from './FindTab'
+import { DurationPicker, LocationPicker, MeetingDetails, StarRating } from './EntryFields'
 
 const BUTTONS: EntryType[] = ['Online', 'In-Person', 'Call', 'Manual']
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -24,7 +24,7 @@ const matchesFilters = (entry: Entry, filters: SearchFilters) => {
   const text = filters.text.trim().toLowerCase()
 
   if (text) {
-    const haystack = [entry.location, entry.note, entry.type].filter(Boolean).join(' ').toLowerCase()
+    const haystack = [entry.location, entry.note, entry.type, entry.meeting?.name].filter(Boolean).join(' ').toLowerCase()
     if (!haystack.includes(text)) return false
   }
 
@@ -50,13 +50,14 @@ const toLocalDateTimeValue = (date = new Date()) => {
   return local.toISOString().slice(0, 16)
 }
 
-export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | null; onDraftUsed?: () => void }) {
+export default function Tracker() {
   const [entries, setEntries] = useState<Entry[]>([])
   const [selectedType, setSelectedType] = useState<EntryType>('Online')
   const [note, setNote] = useState('')
   const [location, setLocation] = useState('')
   const [dateTime, setDateTime] = useState<string>(() => toLocalDateTimeValue())
   const [duration, setDuration] = useState<string>('')
+  const [rating, setRating] = useState<number | undefined>()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState<SearchFilters>(EMPTY_FILTERS)
@@ -84,17 +85,6 @@ export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | nul
     void init()
   }, [])
 
-  // A meeting picked on the Find tab pre-fills the form; the user confirms with Add Entry.
-  useEffect(() => {
-    if (!draft) return
-    setEditingId(null)
-    setSelectedType(draft.type)
-    setDateTime(toLocalDateTimeValue(new Date(draft.dateTime)))
-    setLocation(draft.location ?? '')
-    setDuration(draft.durationMinutes != null ? String(draft.durationMinutes) : '')
-    onDraftUsed?.()
-  }, [draft, onDraftUsed])
-
   useEffect(() => {
     if (!loading) {
       void saveEntries(entries)
@@ -107,6 +97,7 @@ export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | nul
     setLocation('')
     setDateTime(toLocalDateTimeValue())
     setDuration('')
+    setRating(undefined)
   }
 
   const handleSubmit = (event?: FormEvent) => {
@@ -122,7 +113,8 @@ export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | nul
     const nextEntry: Entry = {
       id: editingId ?? uuidv4(),
       type: selectedType,
-      note: selectedType === 'Manual' ? note.trim() : undefined,
+      note: note.trim() || undefined,
+      rating,
       location: location.trim() || undefined,
       dateTime: entryDate.toISOString(),
       durationMinutes: parsedDuration ?? undefined,
@@ -153,6 +145,8 @@ export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | nul
     setLocation(item.location ?? '')
     setDateTime(toLocalDateTimeValue(new Date(item.dateTime)))
     setDuration(item.durationMinutes != null ? String(item.durationMinutes) : '')
+    setRating(item.rating)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleDelete = (id: string) => {
@@ -186,36 +180,28 @@ export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | nul
             />
           </div>
 
-          <div className="field-group duration-group">
-            <label htmlFor="meeting-duration">Duration (min)</label>
-            <input
-              id="meeting-duration"
-              type="number"
-              min="0"
-              value={duration}
-              placeholder="Optional"
-              onChange={(event) => setDuration(event.target.value)}
+          <DurationPicker value={duration} onChange={setDuration} />
+        </div>
+
+        <div className="entry-extras">
+          <LocationPicker value={location} onChange={setLocation} />
+          <div className="field-group">
+            <span className="field-label">Rating</span>
+            <StarRating value={rating} onChange={setRating} />
+          </div>
+          <div className="field-group entry-notes">
+            <label htmlFor="entry-notes">Notes (optional)</label>
+            <textarea
+              id="entry-notes"
+              rows={2}
+              value={note}
+              placeholder={selectedType === 'Manual' ? 'What was this?' : 'How was the meeting?'}
+              onChange={(event) => setNote(event.target.value)}
             />
           </div>
         </div>
 
         <div className="entry-actions">
-          <input
-            type="text"
-            value={location}
-            placeholder="Location (optional)"
-            aria-label="Location"
-            onChange={(event) => setLocation(event.target.value)}
-          />
-          {selectedType === 'Manual' && (
-            <input
-              type="text"
-              value={note}
-              placeholder="Add a manual note..."
-              onChange={(event) => setNote(event.target.value)}
-            />
-          )}
-
           <button type="submit" className="primary-button">
             {editingId ? 'Save Entry' : 'Add Entry'}
           </button>
@@ -250,7 +236,7 @@ export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | nul
         {showSearch && (
           <div className="search-panel" role="search">
             <div className="field-group search-text">
-              <label htmlFor="search-text">Location or note</label>
+              <label htmlFor="search-text">Location, meeting or note</label>
               <input
                 id="search-text"
                 type="search"
@@ -330,15 +316,16 @@ export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | nul
 
         {visibleEntries.map((entry) => (
           <div key={entry.id} className="entry-row">
-            <div>
-              <div className="entry-title">
-                {entry.type}
-                {entry.note ? ` — ${entry.note}` : ''}
-              </div>
+            <div className="entry-body">
+              <div className="entry-title">{entry.meeting?.name ?? entry.type}</div>
               <div className="entry-meta">
+                {entry.meeting ? `${entry.type} • ` : ''}
                 {format(new Date(entry.dateTime), 'EEE yyyy-MM-dd HH:mm')} • {entry.durationMinutes ?? '—'} min
                 {entry.location ? ` • ${entry.location}` : ''}
               </div>
+              {entry.rating ? <StarRating value={entry.rating} size="sm" /> : null}
+              {entry.note ? <p className="entry-note">{entry.note}</p> : null}
+              {entry.meeting ? <MeetingDetails m={entry.meeting} /> : null}
             </div>
 
             <div className="entry-controls">

@@ -300,6 +300,258 @@ button {
   min-height: 240px;
 }
 
+/* Track form extras */
+.entry-extras {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px 16px;
+  margin-top: 16px;
+  align-items: end;
+}
+
+.entry-notes {
+  grid-column: 1 / -1;
+}
+
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.field-group select,
+.field-group textarea,
+.modal textarea {
+  border: 1px solid #d9e1ee;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 12px;
+  color: #1f2937;
+  font: inherit;
+  width: 100%;
+  min-width: 0;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.segmented .type-button {
+  padding: 10px 6px;
+  white-space: nowrap;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.stars button.star {
+  border: 0;
+  background: none;
+  padding: 0 2px;
+  font-size: 1.9rem;
+  line-height: 1;
+  min-width: 36px;
+  min-height: 40px;
+  color: #cbd5e1;
+}
+
+.stars .star.on {
+  color: #f5a524;
+}
+
+.stars-sm {
+  margin-top: 4px;
+}
+
+.stars-sm .star {
+  font-size: 1rem;
+  color: #cbd5e1;
+}
+
+.entry-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.entry-note {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+}
+
+.saved-meeting {
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.saved-meeting summary {
+  cursor: pointer;
+  color: #0b5bd3;
+  font-weight: 600;
+}
+
+.saved-meeting-body {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid #e6edf8;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.saved-meeting-notes {
+  margin: 10px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Dialogs */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+}
+
+@media (min-width: 700px) {
+  .modal-backdrop {
+    align-items: center;
+  }
+}
+
+.modal h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.small {
+  font-size: 0.85rem;
+  margin: -8px 0 0;
+}
+
+.save-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 10px;
+}
+
+.modal-done {
+  width: 100%;
+}
+
+.loc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.loc-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid #e6edf8;
+  border-radius: 10px;
+  background: #f9fbff;
+}
+
+.loc-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.icon-button {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid #dfe7f4;
+  border-radius: 9px;
+  background: #fff;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.icon-button.danger {
+  color: #b42318;
+  border-color: #f3d2d0;
+}
+
+.loc-add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.loc-add input {
+  border: 1px solid #d9e1ee;
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  z-index: 15;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #1e293b;
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.3);
+}
+
+.toast button {
+  border: 0;
+  background: none;
+  color: #8ec5ff;
+  font-weight: 700;
+  padding: 4px;
+}
+
 /* Find tab */
 .mode-toggle {
   display: grid;
