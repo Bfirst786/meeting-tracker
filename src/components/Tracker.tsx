@@ -58,6 +58,7 @@ export default function Tracker() {
   const [dateTime, setDateTime] = useState<string>(() => toLocalDateTimeValue())
   const [duration, setDuration] = useState<string>('')
   const [rating, setRating] = useState<number | undefined>()
+  const [formKey, setFormKey] = useState(0)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState<SearchFilters>(EMPTY_FILTERS)
@@ -98,6 +99,7 @@ export default function Tracker() {
     setDateTime(toLocalDateTimeValue())
     setDuration('')
     setRating(undefined)
+    setFormKey((k) => k + 1)
   }
 
   const handleSubmit = (event?: FormEvent) => {
@@ -146,6 +148,7 @@ export default function Tracker() {
     setDateTime(toLocalDateTimeValue(new Date(item.dateTime)))
     setDuration(item.durationMinutes != null ? String(item.durationMinutes) : '')
     setRating(item.rating)
+    setFormKey((k) => k + 1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -180,7 +183,7 @@ export default function Tracker() {
             />
           </div>
 
-          <DurationPicker value={duration} onChange={setDuration} />
+          <DurationPicker key={formKey} value={duration} onChange={setDuration} />
         </div>
 
         <div className="entry-extras">

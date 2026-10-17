@@ -39,9 +39,10 @@ export function DurationPicker({ value, onChange }: { value: string; onChange: (
   const preset = value === '30' || value === '60'
   const [custom, setCustom] = useState(!preset && value !== '')
 
+  // A non-preset value (e.g. loading an entry with 45 min) opens the custom box.
+  // The parent remounts this component (via `key`) to reset it.
   useEffect(() => {
-    if (value === '') setCustom(false)
-    else if (value !== '30' && value !== '60') setCustom(true)
+    if (value !== '' && value !== '30' && value !== '60') setCustom(true)
   }, [value])
 
   return (

@@ -336,14 +336,24 @@ button {
 /* Track form extras */
 .entry-extras {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px 16px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
   margin-top: 16px;
-  align-items: end;
 }
 
-.entry-notes {
-  grid-column: 1 / -1;
+@media (min-width: 700px) {
+  .entry-extras {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .entry-notes {
+    grid-column: 1 / -1;
+  }
+}
+
+.entry-actions .primary-button {
+  min-width: 160px;
 }
 
 .field-label {
