@@ -26,6 +26,11 @@ button, input, select {
   font: inherit;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 button {
   cursor: pointer;
 }
@@ -123,6 +128,7 @@ button {
 }
 
 .field-group input,
+.field-group select,
 .entry-actions input,
 .export-toolbar select,
 .export-toolbar input {
@@ -163,6 +169,52 @@ button {
 
 .entries-section {
   margin-top: 24px;
+}
+
+.entries-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.entries-header h2 {
+  margin: 0 !important;
+}
+
+.secondary-button.active-outline {
+  border-color: #0b76ef;
+  color: #0b76ef;
+}
+
+.search-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #f4f8ff;
+  border: 1px solid #e1eafa;
+  border-radius: 12px;
+}
+
+.search-panel input,
+.search-panel select {
+  width: 100%;
+  min-width: 0;
+}
+
+.search-text {
+  grid-column: 1 / -1;
+}
+
+.search-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .entries-section h2,
@@ -263,6 +315,14 @@ button {
 
   .toolbar {
     grid-template-columns: 1fr;
+  }
+
+  .search-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-type {
+    grid-column: 1 / -1;
   }
 
   .entry-row {
