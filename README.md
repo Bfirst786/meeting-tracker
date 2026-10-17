@@ -21,12 +21,14 @@ Meeting Attendance Tracker — PWA, local IndexedDB, export & graph
 - Buttons for Online, In-Person, Call, Manual
 - Manual note entry support
 - Date & time selector
-- Optional duration and location entry
+- Duration buttons: 30 min, 60 min, or Custom
+- Location pull-down from your own saved list (add, remove and reorder with "Edit list…")
+- 1–5 star rating and optional notes on every entry
 - Search entries by location or note, type, date, day of week, and time range
 - Find tab: search upcoming AA meetings
   - In-Person: Eastside & Greater Seattle A.A. lists, by radius from Redmond (or any place), grouped by start time and sorted nearest first, Alano Club of the Eastside pinned first, Apple Maps directions
   - Online: Online Intergroup of A.A. list with Zoom join, one-tap dial-in, meeting ID/passcode, notes, email and calendar
-  - "Log" pre-fills an attendance entry from any result
+  - "Save to Track" saves any result as an entry (with rating and notes), keeping the meeting's details and live links (directions, Zoom, dial-in, email)
 - Edit and delete entries
 - Local storage using IndexedDB via localforage
 - Export to text, CSV, Excel, PDF, and graph view

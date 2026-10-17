@@ -1,7 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import Tracker from './components/Tracker'
 import ExportTab from './components/ExportTab'
-import FindTab, { LogDraft } from './components/FindTab'
+import FindTab from './components/FindTab'
 
 type Tab = 'track' | 'find' | 'export'
 
@@ -13,14 +13,6 @@ const TABS: { id: Tab; label: string }[] = [
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('track')
-  const [draft, setDraft] = useState<LogDraft | null>(null)
-  const clearDraft = useCallback(() => setDraft(null), [])
-
-  const logMeeting = (next: LogDraft) => {
-    setDraft(next)
-    setTab('track')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   return (
     <div className="app-shell">
@@ -36,8 +28,8 @@ export default function App() {
       </header>
 
       <main>
-        {tab === 'track' && <Tracker draft={draft} onDraftUsed={clearDraft} />}
-        {tab === 'find' && <FindTab onLog={logMeeting} />}
+        {tab === 'track' && <Tracker />}
+        {tab === 'find' && <FindTab onViewTrack={() => setTab('track')} />}
         {tab === 'export' && <ExportTab />}
       </main>
 
