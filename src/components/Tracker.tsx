@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { v4 as uuidv4 } from 'uuid'
 import { Entry, EntryType } from '../types'
 import { loadEntries, saveEntries } from '../utils/storage'
+import type { LogDraft } from './FindTab'
 
 const BUTTONS: EntryType[] = ['Online', 'In-Person', 'Call', 'Manual']
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -49,7 +50,7 @@ const toLocalDateTimeValue = (date = new Date()) => {
   return local.toISOString().slice(0, 16)
 }
 
-export default function Tracker() {
+export default function Tracker({ draft, onDraftUsed }: { draft?: LogDraft | null; onDraftUsed?: () => void }) {
   const [entries, setEntries] = useState<Entry[]>([])
   const [selectedType, setSelectedType] = useState<EntryType>('Online')
   const [note, setNote] = useState('')
@@ -82,6 +83,17 @@ export default function Tracker() {
     }
     void init()
   }, [])
+
+  // A meeting picked on the Find tab pre-fills the form; the user confirms with Add Entry.
+  useEffect(() => {
+    if (!draft) return
+    setEditingId(null)
+    setSelectedType(draft.type)
+    setDateTime(toLocalDateTimeValue(new Date(draft.dateTime)))
+    setLocation(draft.location ?? '')
+    setDuration(draft.durationMinutes != null ? String(draft.durationMinutes) : '')
+    onDraftUsed?.()
+  }, [draft, onDraftUsed])
 
   useEffect(() => {
     if (!loading) {
