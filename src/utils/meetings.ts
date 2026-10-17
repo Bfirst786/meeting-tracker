@@ -74,6 +74,19 @@ export interface FeedLoad<T> {
   errors: string[]
 }
 
+const ENTITIES: Record<string, string> = { amp: '&', quot: '"', apos: "'", lt: '<', gt: '>', nbsp: ' ', ndash: '–', mdash: '—', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“' }
+
+/** Feeds sometimes carry HTML entities ("12 &amp; 12"); show them as plain text. */
+export const decodeEntities = (value?: string) =>
+  value
+    ?.replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
+    .replace(/&([a-z]+);/gi, (match, name: string) => ENTITIES[name.toLowerCase()] ?? match)
+    .trim()
+
+const dedupeKey = (name: string, day: number, time: string, location: string) =>
+  [name, location].map((v) => v.toLowerCase().replace(/[^a-z0-9]/g, '')).join('|') + `|${day}|${time}`
+
 const normalizeTsml = (raw: TsmlMeeting[], source: string): InPersonMeeting[] =>
   raw.flatMap((m) => {
     const lat = Number(m.latitude)
@@ -83,17 +96,20 @@ const normalizeTsml = (raw: TsmlMeeting[], source: string): InPersonMeeting[] =>
     if (!m.name || !m.time || Number.isNaN(day) || !Number.isFinite(lat) || !Number.isFinite(lng)) return []
     if (option !== 'in_person' && option !== 'hybrid') return []
     if (m.approximate === 'yes') return []
+    const name = decodeEntities(m.name) ?? ''
+    const location = decodeEntities(m.location) || m.formatted_address || ''
+    const time = m.time.slice(0, 5)
     return [
       {
-        key: `${m.name}|${day}|${m.time}|${lat.toFixed(3)},${lng.toFixed(3)}`,
-        name: m.name.trim(),
+        key: dedupeKey(name, day, time, location),
+        name,
         day,
-        time: m.time.slice(0, 5),
+        time,
         endTime: m.end_time?.slice(0, 5),
         types: m.types ?? [],
-        notes: m.notes?.trim() || undefined,
-        location: m.location?.trim() || m.formatted_address || '',
-        locationNotes: m.location_notes?.trim() || undefined,
+        notes: decodeEntities(m.notes) || undefined,
+        location,
+        locationNotes: decodeEntities(m.location_notes) || undefined,
         address: m.formatted_address ?? '',
         lat,
         lng,
@@ -265,10 +281,14 @@ export const normalizeOnline = (raw: CentralMeeting[]): OnlineMeeting[] =>
     const meetingId = meetingIdFrom(conferenceUrl, m.conference_url_notes)
     const passcode = passcodeFrom(m.conference_url_notes)
     const phone = m.conference_phone?.trim() || undefined
-    const dialString =
-      phone && meetingId
-        ? `${phone.replace(/[^\d+]/g, '')},,${meetingId}#${passcode && /^\d+$/.test(passcode) ? `,,,,*${passcode}#` : ''}`
-        : phone?.replace(/[^\d+]/g, '')
+    // Some groups already put the whole dial sequence in the phone field ("+1415…,,7144993468#").
+    const dialString = !phone
+      ? undefined
+      : /[,#]/.test(phone)
+        ? phone.replace(/[^\d+,#*]/g, '')
+        : meetingId
+          ? `${phone.replace(/[^\d+]/g, '')},,${meetingId}#${passcode && /^\d+$/.test(passcode) ? `,,,,*${passcode}#` : ''}`
+          : phone.replace(/[^\d+]/g, '')
 
     const tags = [
       m.type === 'C' ? 'Closed' : m.type === 'O' ? 'Open' : undefined,
@@ -280,18 +300,18 @@ export const normalizeOnline = (raw: CentralMeeting[]): OnlineMeeting[] =>
     return [
       {
         key: `${m.slug ?? m.name}|${startIso}`,
-        name: m.name.trim(),
+        name: decodeEntities(m.name) ?? m.name,
         start: new Date(startIso),
         duration: m.duration ?? 60,
         timezone: m.timezone,
         conferenceUrl,
-        conferenceNotes: m.conference_url_notes?.trim() || undefined,
+        conferenceNotes: decodeEntities(m.conference_url_notes) || undefined,
         phone,
         phoneNotes: m.conference_phone_notes?.trim() || undefined,
         dialString,
         meetingId,
         passcode,
-        notes: [m.notes, m.groupNotes].filter(Boolean).join('\n\n').trim() || undefined,
+        notes: decodeEntities([m.notes, m.groupNotes].filter(Boolean).join('\n\n')) || undefined,
         email: m.groupEmail || undefined,
         website: m.groupWebsite || undefined,
         tags,
