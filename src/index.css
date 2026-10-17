@@ -26,6 +26,39 @@ button, input, select {
   font: inherit;
 }
 
+/* iOS Safari gives date/time inputs an intrinsic min-width and centred text,
+   so they spill out of narrow grid columns. Make them size like other fields. */
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  text-align: left;
+}
+
+input[type='date']::-webkit-date-and-time-value,
+input[type='time']::-webkit-date-and-time-value,
+input[type='datetime-local']::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+}
+
+input,
+select {
+  max-width: 100%;
+}
+
+.field-group,
+.find-form > *,
+.search-panel > * {
+  min-width: 0;
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: default;
