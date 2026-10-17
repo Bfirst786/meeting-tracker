@@ -49,9 +49,9 @@ const searchStart = (day: string, time: string) => {
   }
   if (time) {
     const [h, m] = time.split(':').map(Number)
+    // "Today" means today, even if the chosen time has just passed
+    // (iOS's time picker opens on the current minute).
     start.setHours(h, m, 0, 0)
-    // A time earlier than now with no day chosen means "next time it's that time".
-    if (day === '' && start < now) start.setDate(start.getDate() + 1)
   } else if (start.toDateString() !== now.toDateString()) {
     start.setHours(0, 0, 0, 0)
   } else {
