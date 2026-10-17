@@ -1,0 +1,17 @@
+name: Feed probe (temporary)
+on:
+  push:
+    branches: [claude/feed-probe]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: npm }
+      - run: npm ci && npm run build
+      - run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - name: Run app against live feeds
+        run: |
+          npx vite preview --port 4173 & sleep 4
+          node .probe/live.mjs
